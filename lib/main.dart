@@ -2,7 +2,7 @@ import 'dart:async'; // Perbaikan 1
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:images_upload_api/data_upload.dart';
+import 'package:images_upload_api/uploaded_Data.dart';
 import 'api_service.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 
@@ -109,14 +109,12 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
         ),
         actions: <Widget>[
           IconButton(
-            icon: Icon(
-                Icons.list_alt_outlined), // Ganti dengan ikon yang diinginkan
+            icon: Icon(Icons.list_alt_outlined),
             onPressed: () {
               // Tambahkan aksi ke UploadedDataScreen
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (context) => UploadedDataScreen([]),
-                ),
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => UploadedDataScreen()),
               );
             },
           ),
@@ -168,23 +166,3 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
     );
   }
 }
-
-// // Tambahkan tampilan layar untuk menampilkan data yang diunggah
-// class UploadedDataScreen extends StatelessWidget {
-//   final dynamic uploadedData;
-
-//   UploadedDataScreen(this.uploadedData);
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // Implementasi tampilan layar untuk menampilkan data yang diunggah
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('Uploaded Data'),
-//       ),
-//       body: Center(
-//         child: Text('Uploaded Data: $uploadedData'),
-//       ),
-//     );
-//   }
-// }
