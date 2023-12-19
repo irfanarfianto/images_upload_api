@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String baseUrl = "http://10.10.24.34/flutter_image/";
+  static const String baseUrl = "http://192.168.1.8/flutter_image/";
 
   static Future<String> uploadImage(File imageFile, String description) async {
     try {

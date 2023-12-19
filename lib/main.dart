@@ -1,8 +1,10 @@
+import 'dart:async'; // Perbaikan 1
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:images_upload_api/data_upload.dart';
 import 'api_service.dart';
+import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 
 void main() {
   runApp(MyApp());
@@ -41,54 +43,57 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
       final description = _descriptionController.text;
 
       if (description.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Please enter a description')));
+        showToast(
+          'Eittss.. Kamu belum isi deskripsinya, nih!',
+          context: context,
+          duration: Duration(seconds: 3),
+          position: StyledToastPosition.top,
+          animation: StyledToastAnimation.slideFromTop,
+          curve: Curves.bounceOut,
+          reverseAnimation: StyledToastAnimation.slideToTopFade,
+        );
         return;
       }
 
       try {
-        final result = await ApiService.uploadImage(_imageFile!, description);
-
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text(result)));
+        await ApiService.uploadImage(_imageFile!, description);
 
         setState(() {
           _imageFile = null;
           _descriptionController.clear();
         });
 
-        // Tampilkan pop-up saat berhasil mengunggah
-        showDialog(
+        showToast(
+          '✅ Yeyy.. Foto berhasil diupload!',
           context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text('Success'),
-              content: Text('Image uploaded successfully'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Tutup pop-up
-                    Navigator.of(context).push(
-                      // Buka halaman data setelah menutup pop-up
-                      MaterialPageRoute(
-                        builder: (context) => UploadedDataScreen(
-                            []), // Ganti dengan data yang sesuai
-                      ),
-                    ); // Kembali ke layar sebelumnya
-                  },
-                  child: Text('Back'),
-                ),
-              ],
-            );
-          },
+          duration: Duration(seconds: 5),
+          animation: StyledToastAnimation.fade,
+          position: StyledToastPosition.top,
+          animDuration: Duration(milliseconds: 250),
+          curve: Curves.bounceOut,
+          reverseAnimation: StyledToastAnimation.slideToTopFade,
         );
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text('Failed to upload image. Please try again later.')));
+        showToast(
+          'Gagal upload fotonya nih, coba lagi ya!',
+          context: context,
+          duration: Duration(seconds: 3),
+          position: StyledToastPosition.top,
+          animation: StyledToastAnimation.slideFromTop,
+          curve: Curves.bounceOut,
+          reverseAnimation: StyledToastAnimation.slideToTopFade,
+        );
       }
     } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Please take a picture first')));
+      showToast(
+        'Belum ada fotonya, nih!',
+        context: context,
+        duration: Duration(seconds: 3),
+        position: StyledToastPosition.top,
+        animation: StyledToastAnimation.slideFromTop,
+        curve: Curves.bounceOut,
+        reverseAnimation: StyledToastAnimation.slideToTopFade,
+      );
     }
   }
 
@@ -96,44 +101,90 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Image Upload Example'),
+        title: Text(
+          'Image Upload Example',
+          style: TextStyle(
+            color: Colors.black,
+          ),
+        ),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(
+                Icons.list_alt_outlined), // Ganti dengan ikon yang diinginkan
+            onPressed: () {
+              // Tambahkan aksi ke UploadedDataScreen
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => UploadedDataScreen([]),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _imageFile != null
-                ? Image.file(
-                    _imageFile!,
-                    height: 200,
-                    width: 200,
-                    fit: BoxFit.cover,
-                  )
-                : Container(
-                    height: 200,
-                    width: 200,
-                    color: Colors.grey,
-                    child:
-                        Icon(Icons.camera_alt, size: 50, color: Colors.white),
-                  ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => _pickImage(ImageSource.camera),
-              child: Text("Take Picture"),
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _descriptionController,
-              decoration: InputDecoration(labelText: 'Description'),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _uploadImage,
-              child: Text("Upload Image"),
-            ),
-          ],
+        child: Container(
+          margin: EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              _imageFile != null
+                  ? Image.file(
+                      _imageFile!,
+                      height: 200,
+                      width: 200,
+                      fit: BoxFit.cover,
+                    )
+                  : Container(
+                      height: 200,
+                      width: 200,
+                      color: Colors.grey,
+                      child:
+                          Icon(Icons.camera_alt, size: 50, color: Colors.white),
+                    ),
+              SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () => _pickImage(ImageSource.camera),
+                child: Text("Take Picture"),
+              ),
+              SizedBox(height: 20),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 20.0),
+                child: TextField(
+                  controller: _descriptionController,
+                  decoration: InputDecoration(labelText: 'Description'),
+                ),
+              ),
+              Spacer(), // Menggunakan Spacer untuk fleksibilitas ruang kosong
+              ElevatedButton(
+                onPressed: _uploadImage,
+                child: Text("Upload Image"),
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
 }
+
+// // Tambahkan tampilan layar untuk menampilkan data yang diunggah
+// class UploadedDataScreen extends StatelessWidget {
+//   final dynamic uploadedData;
+
+//   UploadedDataScreen(this.uploadedData);
+
+//   @override
+//   Widget build(BuildContext context) {
+//     // Implementasi tampilan layar untuk menampilkan data yang diunggah
+//     return Scaffold(
+//       appBar: AppBar(
+//         title: Text('Uploaded Data'),
+//       ),
+//       body: Center(
+//         child: Text('Uploaded Data: $uploadedData'),
+//       ),
+//     );
+//   }
+// }
