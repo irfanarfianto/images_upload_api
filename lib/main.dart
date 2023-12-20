@@ -95,6 +95,12 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
         reverseAnimation: StyledToastAnimation.slideToTopFade,
       );
     }
+    // void _viewImages() {
+    //   Navigator.push(
+    //     context,
+    //     MaterialPageRoute(builder: (context) => UploadedImagesPage()),
+    //   );
+    // }
   }
 
   @override
@@ -109,15 +115,26 @@ class _ImageUploadWidgetState extends State<ImageUploadWidget> {
         ),
         actions: <Widget>[
           IconButton(
-            icon: Icon(Icons.list_alt_outlined),
-            onPressed: () {
-              // Tambahkan aksi ke UploadedDataScreen
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => UploadedDataScreen()),
-              );
-            },
-          ),
+  icon: Icon(Icons.list_alt_outlined),
+  onPressed: () {
+    Navigator.push(
+      context,
+      PageRouteBuilder(
+        transitionDuration: Duration(milliseconds: 500),
+        pageBuilder: (context, animation, secondaryAnimation) {
+          return SlideTransition(
+            position: Tween<Offset>(
+              begin: const Offset(1.0, 0.0), // Mulai dari kanan ke kiri
+              end: Offset.zero,
+            ).animate(animation),
+            child: UploadedImagesPage(),
+          );
+        },
+      ),
+    );
+  },
+),
+
         ],
       ),
       body: Center(
